@@ -31,9 +31,19 @@ async fn main() {
             process::exit(1);
         }
     };
+    let context = match service::Context::try_from(&configuration) {
+        Ok(configuration) => configuration,
+        Err(e) => {
+            eprintln!("failed to parse configuration: {}", e);
+            process::exit(1);
+        }
+    };
 
-    let service = make_service_fn(|_conn| async {
-        Ok::<_, Infallible>(service_fn(service::handle))
+    let service = make_service_fn(move |_conn| {
+        let context = context.clone();
+        let service =
+            service_fn(move |req| service::handle(context.clone(), req));
+        async move { Ok::<_, Infallible>(service) }
     });
     if let Err(e) = Server::bind(&configuration.bind).serve(service).await {
         eprintln!("server error: {}", e);
