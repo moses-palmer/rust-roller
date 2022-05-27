@@ -11,6 +11,9 @@ use toml;
 pub struct Configuration {
     /// The address to bind to.
     pub bind: SocketAddr,
+
+    /// The base path to proxy.
+    pub base_uri: String,
 }
 
 impl Configuration {
