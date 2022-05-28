@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::fs;
 use std::io;
 use std::net::SocketAddr;
@@ -14,6 +15,9 @@ pub struct Configuration {
 
     /// The base path to proxy.
     pub base_uri: String,
+
+    /// A definition of what and how to inject.
+    pub inject: Inject,
 }
 
 impl Configuration {
@@ -28,4 +32,16 @@ impl Configuration {
         toml::from_str(&fs::read_to_string(path)?)
             .map_err(|e| io::Error::new(io::ErrorKind::Other, e))
     }
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct Inject {
+    /// The path to the file to inject.
+    pub source: String,
+
+    /// The marker string before which to inject the file.
+    pub marker: String,
+
+    /// The paths for which to inject data.
+    pub paths: HashSet<String>,
 }
