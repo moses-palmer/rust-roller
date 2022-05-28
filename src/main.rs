@@ -31,7 +31,7 @@ async fn main() {
             process::exit(1);
         }
     };
-    let context = match service::Context::try_from(&configuration) {
+    let context = match service::Context::try_from((&configuration, path)) {
         Ok(configuration) => configuration,
         Err(e) => {
             eprintln!("failed to parse configuration: {}", e);
